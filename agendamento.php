@@ -1,34 +1,3 @@
-<?php
-session_start();
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'funcionario') {
-    header("Location: login.php");
-    exit();
-}
-
-require 'config.php';
-$message = '';
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (isset($_POST['add_date'])) {
-        $data = $_POST['data'];
-        $stmt = $pdo->prepare("INSERT INTO agendamentos (funcionario_id, data) VALUES (:funcionario_id, :data)");
-        $stmt->execute(['funcionario_id' => $_SESSION['user_id'], 'data' => $data]);
-        $message = "Data cadastrada com sucesso!";
-    } elseif (isset($_POST['edit_date'])) {
-        $id = $_POST['id'];
-        $data = $_POST['data'];
-        $stmt = $pdo->prepare("UPDATE agendamentos SET data = :data WHERE id = :id");
-        $stmt->execute(['data' => $data, 'id' => $id]);
-        $message = "Data editada com sucesso!";
-    } elseif (isset($_POST['delete_date'])) {
-        $id = $_POST['id'];
-        $stmt = $pdo->prepare("DELETE FROM agendamentos WHERE id = :id");
-        $stmt->execute(['id' => $id]);
-        $message = "Data excluída com sucesso!";
-    }
-}
-
-$stmt = $pdo->query("SELECT * FROM agendamentos WHERE funcionario_id = " . $_SESSION['user_id']);
-?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -42,6 +11,9 @@ $stmt = $pdo->query("SELECT * FROM agendamentos WHERE funcionario_id = " . $_SES
         <h1>Cadastrar Datas para Agendamento</h1>
         <?php if ($message): ?>
             <div class="message"><?= $message ?></div>
+            <script>
+                alert('Agendamento realizado com sucesso');
+            </script>
         <?php endif; ?>
         <form method="post">
             <input type="date" name="data" required>
